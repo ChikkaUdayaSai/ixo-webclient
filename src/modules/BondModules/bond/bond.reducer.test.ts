@@ -53,6 +53,8 @@ describe('Bond Reducer', () => {
         publicAlpha: 0,
         systemAlpha: 0,
         allowReserveWithdrawals: false,
+        alphaHistory: [],
+        withdrawShareHistory: [],
         Outcomes: {
           Rewards: [],
           Targets: [],
@@ -120,6 +122,8 @@ describe('Bond Reducer', () => {
         ],
         transactions: [],
         priceHistory: [],
+        alphaHistory: [],
+        withdrawShareHistory: [],
         initialPrice: 0,
         initialRaised: 0,
         Outcomes: {
