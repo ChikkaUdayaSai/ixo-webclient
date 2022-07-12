@@ -1,9 +1,9 @@
 import styled from 'styled-components'
-import { SectionContainer } from '../PageContent/PageContent.styles'
 
-export const Container = styled(SectionContainer)`
+export const Container = styled.section`
   img {
     width: 100%;
+    margin-right: 15px;
   }
 
   p.caption {

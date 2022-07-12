@@ -15,6 +15,7 @@ import { ApexOptions } from 'apexcharts'
 import { useSelector } from 'react-redux'
 import { RootState } from 'common/redux/types'
 import { formatCurrency } from 'modules/Account/Account.utils'
+import { selectEntityThemeHighlightLight } from 'modules/Entities/EntitiesExplorer/EntitiesExplorer.selectors'
 
 export const ChartStyledHeader = styled(StyledHeader)<{ dark: boolean }>`
   color: ${(props): string => (props.dark ? 'white' : '#212529')};
@@ -26,7 +27,9 @@ export const StyledContainer = styled(Container)<{ dark: boolean }>`
       ? 'linear-gradient(356.78deg, #002d42 2.22%, #012639 96.94%);'
       : 'linear-gradient(rgb(255, 255, 255) 0%, rgb(240, 243, 250) 100%);'};
   border: ${(props): string =>
-    props.dark ? '1px solid #0c3549' : '1px solid #49bfe0'};
+    props.dark
+      ? '1px solid #0c3549'
+      : '1px solid ' + props.theme.highlight.light};
 `
 
 const _options: ApexOptions = {
@@ -102,7 +105,7 @@ const _options: ApexOptions = {
   },
 }
 
-const optionsBar: ApexOptions = {
+const _optionsBar: ApexOptions = {
   chart: {
     height: 160,
     type: 'bar',
@@ -177,18 +180,26 @@ enum FilterRange {
   DAY = 'D',
 }
 
-const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
+interface Props {
+  isDark: boolean
+}
+
+const PriceHistoryChart: React.FunctionComponent<Props> = ({
+  isDark,
+}): JSX.Element => {
   const {
     priceHistory,
     transactions,
     symbol: denom,
     reserveDenom,
   } = useSelector((state: RootState) => state.activeBond)
+  const chartColor = useSelector(selectEntityThemeHighlightLight)
 
   const [seriesData, setSeriesData] = useState([])
   const [seriesBarData, setSeriesBarData] = useState([])
   const [filterRange, setFilterRange] = useState(FilterRange.ALL)
   const [options, setOptions] = useState(_options)
+  const [optionsBar, setOptionsBar] = useState(_optionsBar)
 
   function xAxisDisplayFormat(value): string {
     switch (filterRange) {
@@ -205,7 +216,7 @@ const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
     }
   }
 
-  const generateEmptyDates = (data, lastPrice): any => {
+  const generateEmptyDates = (data, initialPrice): any => {
     const length = data.length
 
     switch (filterRange) {
@@ -215,7 +226,7 @@ const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
             .fill(undefined)
             .map((_, index) => ({
               time: new Date().getTime() - index * 1000 * 60 * 60 * 24,
-              price: lastPrice,
+              price: initialPrice,
             }))
             .reverse()
         } else {
@@ -237,12 +248,12 @@ const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
             .fill(undefined)
             .map((_, index) => ({
               time: new Date().getTime() - index * 1000 * 60 * 60 * 24,
-              price: lastPrice,
+              price: initialPrice,
             }))
             .reverse()
         } else {
           const series = []
-          let minData = data[0]
+          let minPrice = initialPrice
 
           for (let i = 1; i <= 30; i++) {
             const pastTime = moment()
@@ -253,14 +264,12 @@ const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
               (item) => moment(item.time).diff(pastTime) === 0,
             )
             if (isExist) {
-              minData = isExist
-            } else {
-              minData = {
-                ...minData,
-                time: pastTime,
-              }
+              minPrice = isExist.price
             }
-            series.push(minData)
+            series.push({
+              time: pastTime,
+              price: minPrice,
+            })
           }
           return series
         }
@@ -270,12 +279,12 @@ const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
             .fill(undefined)
             .map((_, index) => ({
               time: new Date().getTime() - index * 1000 * 60 * 60 * 24,
-              price: lastPrice,
+              price: initialPrice,
             }))
             .reverse()
         } else {
           const series = []
-          let minData = data[0]
+          let minPrice = initialPrice
 
           for (let i = 1; i <= 5; i++) {
             const pastTime = moment()
@@ -286,14 +295,12 @@ const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
               (item) => moment(item.time).diff(pastTime) === 0,
             )
             if (isExist) {
-              minData = isExist
-            } else {
-              minData = {
-                ...minData,
-                time: pastTime,
-              }
+              minPrice = isExist.price
             }
-            series.push(minData)
+            series.push({
+              time: pastTime,
+              price: minPrice,
+            })
           }
           return series
         }
@@ -303,12 +310,12 @@ const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
             .fill(undefined)
             .map((_, index) => ({
               time: new Date().getTime() - index * 1000 * 60 * 60,
-              price: lastPrice,
+              price: initialPrice,
             }))
             .reverse()
         } else {
           const series = []
-          let minData = data[0]
+          let minPrice = initialPrice
 
           for (let i = 1; i <= 24; i++) {
             const pastTime = moment()
@@ -319,14 +326,12 @@ const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
               (item) => moment(item.time).diff(pastTime) === 0,
             )
             if (isExist) {
-              minData = isExist
-            } else {
-              minData = {
-                ...minData,
-                time: pastTime,
-              }
+              minPrice = isExist.price
             }
-            series.push(minData)
+            series.push({
+              time: pastTime,
+              price: minPrice,
+            })
           }
           return series
         }
@@ -414,11 +419,15 @@ const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
       }
     })
 
-    const { price: lastPrice } = data.pop()
+    const initialPrice =
+      data.reverse().find(({ time }) => {
+        if (meanData.length === 0) {
+          return true
+        }
+        return moment(time).valueOf() < moment(meanData[0].time).valueOf()
+      })?.price ?? 0
 
-    return generateEmptyDates(meanData, Number(lastPrice))
-
-    // return meanData
+    return generateEmptyDates(meanData, Number(initialPrice))
   }
 
   const groupTransactionHistory = (data, rangeType): any => {
@@ -506,6 +515,7 @@ const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
         ..._options.yaxis,
         min: minPriceInPeriod,
       },
+      colors: [chartColor],
       tooltip: {
         y: {
           title: {
@@ -519,20 +529,24 @@ const PriceHistoryChart: React.FunctionComponent = (): JSX.Element => {
         },
       },
     })
+    setOptionsBar({
+      ..._optionsBar,
+      colors: [chartColor, _optionsBar.colors[1]],
+    })
     // eslint-disable-next-line
   }, [filterRange, seriesData])
 
   return (
     <Fragment>
-      <ChartStyledHeader dark={true}>
+      <ChartStyledHeader dark={isDark}>
         {' '}
         Price of {denom.toUpperCase()}{' '}
       </ChartStyledHeader>
       <StyledContainer
-        dark={true}
+        dark={isDark}
         className="BondsWrapper_panel__chrome hide-on-mobile"
       >
-        <FilterContainer color={'#39C3E6'} backgroundColor={'#39C3E6'}>
+        <FilterContainer>
           <DateFilterContainer>
             <Button
               type={ButtonTypes.dark}

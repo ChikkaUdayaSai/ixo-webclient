@@ -12,7 +12,7 @@ export const SearchWrapper = styled.div`
   border-radius: 4px;
   transform: translateY(-50%);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  font-family: Roboto, sans-serif;
+  font-family: ${(props): string => props.theme.primaryFontFamily};
   font-weight: 400;
   z-index: 4;
   > * {
@@ -115,7 +115,7 @@ export const SearchModal = styled.div`
 `
 
 export const SearchHeading = styled.h3`
-  font-family: 'Roboto', sans-serif;
+  font-family: ${(props): string => props.theme.primaryFontFamily};
   font-weight: 600;
   font-size: 1.25rem;
   box-sizing: border-box;
@@ -151,15 +151,17 @@ export const SearchFilterButton = styled.button<{ color: string }>`
 
   &:hover:not(.disabled) {
     color: #fff;
-    svg path {
+    svg path,
+    svg circle {
       fill: #fff;
     }
   }
-  ${({color}): any => Object.keys(EntityType).map((key) => {
-    const className = key.toLowerCase()
-    // const color = entityTypeMap[key].themeColor
+  ${({ color }): any =>
+    Object.keys(EntityType).map((key) => {
+      const className = key.toLowerCase()
+      // const color = entityTypeMap[key].themeColor
 
-    return `&.${className} {
+      return `&.${className} {
           border: 2px solid ${color};
           &.active {
             background: linear-gradient(
@@ -174,7 +176,7 @@ export const SearchFilterButton = styled.button<{ color: string }>`
             background: linear-gradient(90deg, ${color} 0%, ${color} 100%);
           }
         }`
-  })}
+    })}
   &.disabled {
     border-color: #a5adb0;
     color: #a5adb0;

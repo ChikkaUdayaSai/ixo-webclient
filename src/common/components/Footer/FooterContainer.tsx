@@ -15,23 +15,16 @@ import {
 const Footer: React.FunctionComponent<{}> = () => {
   return (
     <BottomBar className="container-fluid text-white">
-      <div className="row">
+      <div className="row align-items-center">
         <FooterText className="col-md-8">
           <div className="row">
             <a href="mailto:info@ixo.world">
               <FooterTextBlue>Email</FooterTextBlue>
             </a>
-            <span className="mx-5">
+            <span className="mx-md-5 mx-0">
               ixo.world AG, Industriering 14, 9491, Ruggel, Liechtenstein
             </span>
             <ByLine>
-              {/* <a
-                href="https://github.com/ixofoundation/Legal-Documents/raw/master/Terms%20%26%20Conditions.pdf#page=2"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Terms
-              </a> */}
               <a
                 href="https://www.ixo.world/privacy-policy"
                 target="_blank"
@@ -39,13 +32,6 @@ const Footer: React.FunctionComponent<{}> = () => {
               >
                 Privacy policy
               </a>
-              {/* <a
-                href="https://github.com/ixofoundation/Legal-Documents/raw/master/ixo.world%20-%20Security.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Security
-              </a> */}
             </ByLine>
           </div>
         </FooterText>

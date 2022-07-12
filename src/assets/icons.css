@@ -276,59 +276,64 @@
   content: '\e953'; }
 
 .icon-project {
-  width: 20px;
-  height: 18px;
+  height: 22px;
+  min-width: 22px;
   background: url(img/tabs/projects.svg);
   background-repeat: no-repeat;
 }
 
 .icon-asset {
-  width: 20px;
-  height: 18px;
-  background: url(img/tabs/projects.svg);
+  height: 22px;
+  min-width: 22px;
+  background: url(img/tabs/asset.svg);
   background-repeat: no-repeat;
 }
 
 .icon-oracle {
-  width: 20px;
-  height: 18px;
+  height: 22px;
+  min-width: 22px;
   background: url(img/tabs/oracle.svg);
   background-repeat: no-repeat;
 }
 
-.icon-investment:before {
-  content: '\e956'; }
+.icon-investment {
+  height: 22px;
+  min-width: 22px;
+  background: url(img/tabs/investment.svg);
+  background-repeat: no-repeat;
+}
 
-.icon-cell {
-  width: 20px;
-  height: 18px;
+.icon-dao {
+  height: 22px;
+  min-width: 22px;
   background: url(img/tabs/cell.svg);
   background-repeat: no-repeat;
 }
 
-.icon-template:before {
-  content: '\e958'; }
+.icon-template {
+  height: 22px;
+  min-width: 22px;
+  background: url(img/tabs/template.svg);
+  background-repeat: no-repeat;
+}
 
 .icon-data {
-  width: 20px;
-  height: 18px;
-  min-width: 18px;
+  height: 22px;
+  min-width: 22px;
   background: url(img/tabs/projects.svg);
   background-repeat: no-repeat;
 }
 
 .icon-dashboard {
-  width: 20px;
-  height: 18px;
-  min-width: 18px;
+  height: 22px;
+  min-width: 22px;
   background: url(img/tabs/dashboard.svg);
   background-repeat: no-repeat;
 }
 
 .icon-exchange {
-  width: 20px;
-  height: 18px;
-  min-width: 18px;
+  height: 22px;
+  min-width: 22px;
   background: url(img/tabs/exchange.svg);
   background-repeat: no-repeat;
 }

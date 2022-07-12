@@ -3,7 +3,10 @@ import { Schema as HeaderSchema } from './EntitiesExplorer/components/EntitiesHe
 import { Schema as ControlPanelSchema } from 'common/components/ControlPanel/types'
 import { AgentRole } from 'modules/Account/types'
 
-export const PDS_URL = process.env.REACT_APP_PDS_URL
+export const PDS_URL =
+  process.env.REACT_APP_USE_LOCAL_CELLNODE === 'true'
+    ? process.env.REACT_APP_PDS_LOCAL_URL
+    : process.env.REACT_APP_PDS_URL
 
 export interface Agent {
   status: string
@@ -187,12 +190,15 @@ export type EntityTypeStrategyMap = {
 }
 
 export interface EntityConfig extends EntityTypeStrategyMap {
-  topMenu: {
-    item: string
-    visible: boolean
-  }[]
-  explorer: {
-    defaultView: string
+  theme?: any
+  UI?: {
+    topMenu?: {
+      item: string
+      visible: boolean
+    }[]
+    explorer?: {
+      defaultView: string
+    }
   }
 }
 

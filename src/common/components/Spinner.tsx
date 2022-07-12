@@ -1,5 +1,6 @@
 import * as React from 'react'
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 
 const LoaderContainer = styled.div`
   height: 80px;
@@ -9,23 +10,11 @@ const LoaderContainer = styled.div`
   justify-content: center;
 `
 
-const LoaderWrapper = styled.div`
-  padding: 0;
-  border-radius: 50%;
-  position: relative;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  background: #00c2e4;
-  justify-content: center;
-  align-items: center;
-`
-
 const Pulse = styled.div`
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  background: ${/* eslint-disable-line */ props => props.theme.ixoBlue};
+  background: ${/* eslint-disable-line */ (props) => props.theme.ixoBlue};
   position: absolute;
   margin: 0;
   padding: 1px;
@@ -34,7 +23,7 @@ const Pulse = styled.div`
     0% {
       width: 40px;
       height: 40px;
-      background: rgba(0, 210, 255, 1);
+      background: ${(props): string => props.theme.highlight.light};
     }
     100% {
       width: 80px;
@@ -45,24 +34,6 @@ const Pulse = styled.div`
   animation: spinPulse 1.5s infinite ease;
 `
 
-const IxoIcon = styled.i`
-  font-size: 54px;
-  display: block;
-  width: 29px;
-  height: 29px;
-  padding: 0;
-  background: ${/* eslint-disable-line */ props => props.theme.bg.blue};
-  border-radius: 50%;
-  position: absolute;
-
-  :before {
-    color: ${/* eslint-disable-line */ props => props.theme.ixoBlue};
-    position: relative;
-    top: -13px;
-    left: -12px;
-  }
-`
-
 export interface Props {
   info: string
   transparentBg?: boolean
@@ -70,10 +41,6 @@ export interface Props {
 }
 
 export const Spinner: React.SFC<Props> = ({ info, transparentBg, scale }) => {
-  let bgString = 'background-color: #002233;'
-  if (transparentBg === true) {
-    bgString = ''
-  }
   const Container = styled.div`
     display: flex;
     justify-content: center;
@@ -81,10 +48,13 @@ export const Spinner: React.SFC<Props> = ({ info, transparentBg, scale }) => {
     flex-direction: column;
     transform: scale(${scale});
     height: 100%;
-    ${bgString}
-    flex:1 1 auto;
+    background-color: ${(props): string =>
+      transparentBg ? '' : props.theme.bg.blue};
+    flex: 1 1 auto;
     p {
-      color: ${/* eslint-disable-line */ props => props.theme.ixoBlue};
+      color: ${
+        /* eslint-disable-line */ (props) => props.theme.highlight.light
+      };
       margin-top: 10px;
     }
   `
@@ -92,11 +62,44 @@ export const Spinner: React.SFC<Props> = ({ info, transparentBg, scale }) => {
     <Container>
       <LoaderContainer>
         <Pulse />
-        <LoaderWrapper>
+        {/* <LoaderWrapper>
           <IxoIcon className="icon-ixo-x" />
-        </LoaderWrapper>
+        </LoaderWrapper> */}
       </LoaderContainer>
       <p>{info}</p>
+    </Container>
+  )
+}
+
+interface ProjectLoadingErrorProps {
+  error: string
+}
+
+export const ProjectLoadingError: React.FC<ProjectLoadingErrorProps> = ({
+  error,
+}) => {
+  const Container = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    background-color: ${(props): string => props.theme.bg.blue};
+    flex: 1 1 auto;
+    p {
+      color: ${(props): string => props.theme.highlight.light};
+      margin-top: 10px;
+      font-size: 32px;
+      font-weight: 900;
+    }
+    a {
+      color: ${(props): string => props.theme.highlight.light};
+    }
+  `
+  return (
+    <Container>
+      <p>{error}</p>
+      <Link to={'/'}>Take me home</Link>
     </Container>
   )
 }

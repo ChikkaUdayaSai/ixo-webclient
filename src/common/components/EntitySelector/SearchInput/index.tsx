@@ -9,6 +9,7 @@ const StyledInput = styled.input`
   height: 100%;
   width: 100%;
   border: 1px solid hsl(0, 0%, 80%) !important;
+  padding-left: 10px;
   &:focus {
     box-shadow: 0 0 0 1px #2684ff !important;
     border-color: #2684ff !important;
@@ -26,6 +27,10 @@ const StyledSearchIconWrapper = styled.div`
   transform: translateY(-50%);
   right: 1rem;
   height: 18px;
+
+  svg > path {
+    fill: ${(props): string => props.theme.highlight.light};
+  }
 `
 
 export interface SearchInputProps {
@@ -41,7 +46,7 @@ const SearchInput: React.FunctionComponent<SearchInputProps> = ({
     <StyledInputWrapper>
       <StyledInput onChange={onChange} value={value} />
       <StyledSearchIconWrapper>
-        <SearchIcon fill="#39C3E6" />
+        <SearchIcon />
       </StyledSearchIconWrapper>
     </StyledInputWrapper>
   )

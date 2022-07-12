@@ -15,7 +15,7 @@ import { selectEntityConfig } from 'modules/Entities/EntitiesExplorer/EntitiesEx
 const Container = styled.div`
   display: block;
   flex: 1 1 auto;
-  font-family: 'Roboto Condensed';
+  font-family: ${(props): string => props.theme.secondaryFontFamily};
 
   @media (min-width: ${deviceWidth.mobile}px) {
     display: flex;
@@ -62,7 +62,8 @@ export const DashboardThemes = {
   DARK: 'dark',
 } as const
 
-export type DashboardTheme = typeof DashboardThemes[keyof typeof DashboardThemes]
+export type DashboardTheme =
+  typeof DashboardThemes[keyof typeof DashboardThemes]
 
 interface Props {
   title: string
@@ -78,7 +79,7 @@ const Dashboard: React.FunctionComponent<Props> = ({
   title,
   subRoutes,
   baseRoutes,
-  tabs,
+  // tabs,
   theme = 'dark',
   children,
   entityType,

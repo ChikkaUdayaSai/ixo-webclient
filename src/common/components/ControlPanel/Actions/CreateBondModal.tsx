@@ -43,7 +43,7 @@ const InfoBox = styled.div`
   }
 
   & > span {
-    font-family: 'Roboto';
+    font-family: ${(props): string => props.theme.primaryFontFamily};
     font-style: normal;
     font-weight: 700;
     font-size: 15px;
@@ -58,7 +58,7 @@ const DescriptionInput = styled.input`
   color: white;
   padding: 15px;
   outline: none;
-  font-family: 'Roboto';
+  font-family: ${(props): string => props.theme.primaryFontFamily};
   font-style: normal;
   font-weight: 700;
   font-size: 15px;
@@ -316,7 +316,7 @@ const CreateBondModal: React.FunctionComponent<Props> = ({ alphaBondInfo }) => {
             onChange={(event: any): void => {
               setBondDescription(event.target.value)
             }}
-            placeholder="Description (optional)"
+            placeholder="Description (required)"
           />
         </>
       )}

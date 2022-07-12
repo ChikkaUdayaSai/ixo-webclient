@@ -9,7 +9,7 @@ export const DropdownWrapper = styled.div`
   margin-left: -37px;
   box-shadow: unset;
   background: none;
-  font-family: ${(props: any): string => props.theme.fontRobotoCondensed};
+  font-family: ${(props: any): string => props.theme.secondaryFontFamily};
   font-weight: 400;
   z-index: 10;
   letter-spacing: 1px;
@@ -42,7 +42,7 @@ export const ModalButton = styled.div`
   color: #fff;
   @media (min-width: ${deviceWidth.desktop}px) {
     font-size: 13px;
-    background: #000;
+    background: inherit;
   }
   > * {
     display: block;

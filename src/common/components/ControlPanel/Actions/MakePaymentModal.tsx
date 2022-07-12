@@ -34,24 +34,12 @@ import {
   NextStep,
   PrevStep,
   TXStatusBoard,
+  OverlayWrapper, 
+  Divider,
 } from './Modal.styles'
 
-const OverlayWrapper = styled.div`
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 120px;
-}
-`
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: #235975;
-`
-
 const NetworkFee = styled.div`
-  font-family: Roboto;
+  font-family: ${(props): string => props.theme.primaryFontFamily};
   font-style: normal;
   font-weight: 300;
   font-size: 12px;
