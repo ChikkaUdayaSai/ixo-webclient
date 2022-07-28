@@ -25,7 +25,7 @@ import {
   checkValidAddress,
 } from 'modules/Account/Account.utils'
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
-import { broadCastMessage } from 'common/utils/keysafe'
+import { broadCastMessage, newBroadCastTx } from 'common/utils/keysafe'
 import pendingAnimation from 'assets/animations/transaction/pending.json'
 import successAnimation from 'assets/animations/transaction/success.json'
 import errorAnimation from 'assets/animations/transaction/fail.json'
@@ -78,6 +78,10 @@ const SendModal: React.FunctionComponent<Props> = ({
   const [balances, setBalances] = useState<Currency[]>([])
   const [signTXStatus, setSignTXStatus] = useState<TXStatus>(TXStatus.PENDING)
   const [signTXhash, setSignTXhash] = useState<string>(null)
+
+  useEffect(() => {
+    newBroadCastTx()
+  }, [])
 
   const {
     userInfo,

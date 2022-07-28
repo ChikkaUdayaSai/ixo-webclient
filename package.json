@@ -6,6 +6,7 @@
     "@cosmjs/launchpad": "^0.25.6",
     "@cosmjs/proto-signing": "^0.26.0",
     "@cosmjs/stargate": "^0.26.0",
+    "@cosmos-client/core": "^0.46.0-rc7",
     "@ixo/ixo-apimodule": "^1.0.9",
     "@rjsf/core": "^2.2.2",
     "@sentry/react": "^6.19.6",

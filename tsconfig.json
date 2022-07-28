@@ -4,11 +4,8 @@
     "esModuleInterop": true,
     "outDir": "build/dist",
     "module": "esnext",
-    "target": "es5",
-    "lib": [
-      "es6",
-      "dom"
-    ],
+    "target": "ES6",
+    "lib": ["DOM", "ES6", "DOM.Iterable", "ScriptHost", "ES2016.Array.Include"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
