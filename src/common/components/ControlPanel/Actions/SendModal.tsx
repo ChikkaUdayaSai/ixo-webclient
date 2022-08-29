@@ -3,7 +3,6 @@ import Axios from 'axios'
 import Lottie from 'react-lottie'
 import styled from 'styled-components'
 import { Currency } from 'types/models'
-import * as keplr from 'common/utils/keplr'
 import TokenSelector from 'common/components/TokenSelector/TokenSelector'
 import { StepsTransactions } from 'common/components/StepsTransactions/StepsTransactions'
 import ModalInput from 'common/components/ModalInput/ModalInput'
@@ -25,7 +24,6 @@ import {
   checkValidAddress,
 } from 'modules/Account/Account.utils'
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
-import { broadCastMessage } from 'common/utils/keysafe'
 import pendingAnimation from 'assets/animations/transaction/pending.json'
 import successAnimation from 'assets/animations/transaction/success.json'
 import errorAnimation from 'assets/animations/transaction/fail.json'
@@ -39,6 +37,10 @@ import {
   TXStatusBoard,
   CheckWrapper,
 } from './Modal.styles'
+import { useWallet } from 'common/utils/wallet'
+import { getMsgSendStdSignDoc } from 'common/utils/message.helpers'
+import { useSign } from 'common/utils/sign.utils'
+import { useBroadcast } from 'common/utils/broadcast.utils'
 
 const NetworkFee = styled.div`
   font-family: ${(props): string => props.theme.primaryFontFamily};
@@ -79,10 +81,13 @@ const SendModal: React.FunctionComponent<Props> = ({
   const [signTXStatus, setSignTXStatus] = useState<TXStatus>(TXStatus.PENDING)
   const [signTXhash, setSignTXhash] = useState<string>(null)
 
+  const { sign } = useSign()
+  const { broadcast } = useBroadcast()
+
   const {
-    userInfo,
     sequence: userSequence,
     accountNumber: userAccountNumber,
+    keplrWallet,
   } = useSelector((state: RootState) => state.account)
 
   const handleAddressChange = (event): void => {
@@ -110,6 +115,92 @@ const SendModal: React.FunctionComponent<Props> = ({
   const handlePrevStep = (): void => {
     setCurrentStep(currentStep - 1)
   }
+  // const handleNextStep = async (): Promise<void> => {
+  //   setCurrentStep(currentStep + 1)
+  //   if (currentStep === 2) {
+  //     let formattedAmount: any = asset
+  //     if (formattedAmount.denom === 'ixo') {
+  //       formattedAmount = {
+  //         amount: getUIXOAmount(String(amount)),
+  //         denom: 'uixo',
+  //       }
+  //     } else {
+  //       formattedAmount = {
+  //         amount: amount,
+  //         denom: formattedAmount.denom,
+  //       }
+  //     }
+  //     // handleSend(walletType, amount, address, memo)
+  //     if (walletType === 'keysafe') {
+  //       const msg = {
+  //         type: 'cosmos-sdk/MsgSend',
+  //         value: {
+  //           amount: [formattedAmount],
+  //           from_address: accountAddress,
+  //           to_address: receiverAddress,
+  //         },
+  //       }
+  //       const fee = {
+  //         amount: [{ amount: String(5000), denom: 'uixo' }],
+  //         gas: String(200000),
+  //       }
+  //       broadCastMessage(
+  //         userInfo,
+  //         userSequence,
+  //         userAccountNumber,
+  //         [msg],
+  //         memo,
+  //         fee,
+  //         (hash) => {
+  //           if (hash) {
+  //             setSignTXStatus(TXStatus.SUCCESS)
+  //             setSignTXhash(hash)
+  //           } else {
+  //             setSignTXStatus(TXStatus.ERROR)
+  //           }
+  //         },
+  //       )
+  //     } else if (walletType === 'keplr') {
+  //       const [accounts, offlineSigner] = await keplr.connectAccount()
+  //       const address = accounts[0].address
+  //       const client = await keplr.initStargateClient(offlineSigner)
+
+  //       const payload = {
+  //         msgs: [
+  //           {
+  //             typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+  //             value: MsgSend.fromPartial({
+  //               fromAddress: address,
+  //               toAddress: receiverAddress,
+  //               amount: [formattedAmount],
+  //             }),
+  //           },
+  //         ],
+  //         chain_id: process.env.REACT_APP_CHAIN_ID,
+  //         fee: {
+  //           amount: [{ amount: String(5000), denom: 'uixo' }],
+  //           gas: String(200000),
+  //         },
+  //         memo,
+  //       }
+
+  //       try {
+  //         const result = await keplr.sendTransaction(client, address, payload)
+  //         if (result) {
+  //           setSignTXStatus(TXStatus.SUCCESS)
+  //           setSignTXhash(result.transactionHash)
+  //         } else {
+  //           // eslint-disable-next-line
+  //           throw 'transaction failed'
+  //         }
+  //       } catch (e) {
+  //         console.error(111, e)
+  //         setSignTXStatus(TXStatus.ERROR)
+  //       }
+  //     }
+  //   }
+  // }
+
   const handleNextStep = async (): Promise<void> => {
     setCurrentStep(currentStep + 1)
     if (currentStep === 2) {
@@ -125,73 +216,23 @@ const SendModal: React.FunctionComponent<Props> = ({
           denom: formattedAmount.denom,
         }
       }
-      // handleSend(walletType, amount, address, memo)
-      if (walletType === 'keysafe') {
-        const msg = {
-          type: 'cosmos-sdk/MsgSend',
-          value: {
-            amount: [formattedAmount],
-            from_address: accountAddress,
-            to_address: receiverAddress,
-          },
-        }
-        const fee = {
-          amount: [{ amount: String(5000), denom: 'uixo' }],
-          gas: String(200000),
-        }
-        broadCastMessage(
-          userInfo,
-          userSequence,
-          userAccountNumber,
-          [msg],
-          memo,
-          fee,
-          (hash) => {
-            if (hash) {
-              setSignTXStatus(TXStatus.SUCCESS)
-              setSignTXhash(hash)
-            } else {
-              setSignTXStatus(TXStatus.ERROR)
-            }
-          },
-        )
-      } else if (walletType === 'keplr') {
-        const [accounts, offlineSigner] = await keplr.connectAccount()
-        const address = accounts[0].address
-        const client = await keplr.initStargateClient(offlineSigner)
 
-        const payload = {
-          msgs: [
-            {
-              typeUrl: '/cosmos.bank.v1beta1.MsgSend',
-              value: MsgSend.fromPartial({
-                fromAddress: address,
-                toAddress: receiverAddress,
-                amount: [formattedAmount],
-              }),
-            },
-          ],
-          chain_id: process.env.REACT_APP_CHAIN_ID,
-          fee: {
-            amount: [{ amount: String(5000), denom: 'uixo' }],
-            gas: String(200000),
-          },
-          memo,
-        }
+      const payload = await getMsgSendStdSignDoc(
+        walletType === 'keysafe' ? accountAddress : keplrWallet.address,
+        receiverAddress,
+        formattedAmount,
+      )
 
-        try {
-          const result = await keplr.sendTransaction(client, address, payload)
-          if (result) {
-            setSignTXStatus(TXStatus.SUCCESS)
-            setSignTXhash(result.transactionHash)
-          } else {
-            // eslint-disable-next-line
-            throw 'transaction failed'
-          }
-        } catch (e) {
-          console.error(111, e)
-          setSignTXStatus(TXStatus.ERROR)
-        }
+      const signature = await sign(walletType, payload)
+      console.log('signature', signature)
+      const txHash = await broadcast(signature)
+      console.log('txHash', txHash)
+
+      if (txHash) {
+        setSignTXStatus(TXStatus.SUCCESS)
+        setSignTXhash(txHash)
+      } else {
+        setSignTXStatus(TXStatus.ERROR)
       }
     }
   }
