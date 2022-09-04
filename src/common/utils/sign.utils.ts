@@ -12,11 +12,30 @@ export function useSign(): any {
     return new Promise((resolve) => {
       keysafe.requestSigning(
         JSON.stringify(sortObject(payload)),
-        (error: any, signature: any) => {
+        async (error: any, signature: any) => {
           if (error) {
             resolve(null)
           } else {
-            resolve(signature.signatureValue)
+            console.log('signature', signature)
+            const { publicKey } = signature
+
+            const client = await keplr.initStargateClient(null)
+            const sig = await client.generateSignObj(
+              'ixo19h3lqj50uhzdrv8mkafnp55nqmz4ghc2sd3m48',
+              publicKey,
+              payload.msgs,
+              payload.fee,
+              payload.memo,
+              {
+                accountNumber: payload.account_number,
+                sequence: payload.sequence,
+                chainId: payload.chain_id,
+              },
+            )
+
+            console.log(11111111111, sig)
+
+            resolve(signature.publicKey)
           }
         },
         'base64',
