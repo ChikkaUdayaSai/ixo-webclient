@@ -36,25 +36,79 @@ export const broadCastMessage = (
         callback(null)
         return
       }
-      Axios.post(`${BLOCKCHAIN_API}/txs`, {
-        tx: {
-          msg: payload.msgs,
-          fee: payload.fee,
-          signatures: [
-            {
-              account_number: payload.account_number,
-              sequence: payload.sequence,
-              signature: signature.signatureValue,
-              pub_key: {
-                type: 'tendermint/PubKeyEd25519',
-                value: pubKey,
-              },
+      const txBody = {
+        msg: payload.msgs,
+        fee: payload.fee,
+        signatures: [
+          {
+            account_number: payload.account_number,
+            sequence: payload.sequence,
+            signature: signature.signatureValue,
+            pub_key: {
+              type: 'tendermint/PubKeyEd25519',
+              value: pubKey,
             },
-          ],
-          memo: '',
-        },
-        mode: 'sync',
+          },
+        ],
+        memo: '',
+      }
+
+      const tx_bytes = Buffer.from(txBody as any).toString('base64')
+      Axios.post(`${BLOCKCHAIN_API}/cosmos/tx/v1beta1/txs`, {
+        tx_bytes,
+        mode: 'BROADCAST_MODE_SYNC',
       })
+        ///////////////////////////////////////
+        // const pp = {
+        //   body: {
+        //     messages: payload.msgs,
+        //     memo: payload.memo,
+        //     timeout_height: '0',
+        //     extension_options: [],
+        //     non_critical_extension_options: [],
+        //   },
+        //   auth_info: {
+        //     signer_infos: [
+        //       {
+        //         public_key: pubKey,
+        //         mode_info: {
+        //           single: {
+        //             mode: 'SIGN_MODE_LEGACY_AMINO_JSON',
+        //           },
+        //         },
+        //         sequence: payload.sequence,
+        //       },
+        //     ],
+        //     fee: payload.fee,
+        //   },
+        //   signatures: [signature.signatureValue],
+        // }
+        // const tx_bytes = Buffer.from(JSON.stringify(pp)).toString('base64')
+
+        // Axios.post(`${BLOCKCHAIN_API}/cosmos/tx/v1beta1/txs`, {
+        //   tx_bytes,
+        //   mode: 'BROADCAST_MODE_SYNC',
+        // })
+        ///////////////////////////////////////
+        // Axios.post(`${BLOCKCHAIN_API}/txs`, {
+        //   tx: {
+        //     msg: payload.msgs,
+        //     fee: payload.fee,
+        //     signatures: [
+        //       {
+        //         account_number: payload.account_number,
+        //         sequence: payload.sequence,
+        //         signature: signature.signatureValue,
+        //         pub_key: {
+        //           type: 'tendermint/PubKeyEd25519',
+        //           value: pubKey,
+        //         },
+        //       },
+        //     ],
+        //     memo: '',
+        //   },
+        //   mode: 'sync',
+        // })
         .then((response) => {
           if (response.data.txhash) {
             if (response.data.code === 4) {
