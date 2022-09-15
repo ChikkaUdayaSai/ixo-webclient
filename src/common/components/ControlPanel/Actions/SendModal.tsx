@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Axios from 'axios'
+import keysafe from 'common/keysafe/keysafe'
 import Lottie from 'react-lottie'
 import styled from 'styled-components'
 import { Currency } from 'types/models'
@@ -41,6 +42,8 @@ import { useWallet } from 'common/utils/wallet'
 import { getMsgSendStdSignDoc } from 'common/utils/message.helpers'
 import { useSign } from 'common/utils/sign.utils'
 import { useBroadcast } from 'common/utils/broadcast.utils'
+import { messageSend } from 'messageSend'
+import { OfflineSigner } from '@cosmjs/proto-signing'
 
 const NetworkFee = styled.div`
   font-family: ${(props): string => props.theme.primaryFontFamily};
@@ -204,36 +207,70 @@ const SendModal: React.FunctionComponent<Props> = ({
   const handleNextStep = async (): Promise<void> => {
     setCurrentStep(currentStep + 1)
     if (currentStep === 2) {
-      let formattedAmount: any = asset
-      if (formattedAmount.denom === 'ixo') {
-        formattedAmount = {
-          amount: getUIXOAmount(String(amount)),
-          denom: 'uixo',
-        }
-      } else {
-        formattedAmount = {
-          amount: amount,
-          denom: formattedAmount.denom,
-        }
-      }
+      // const signDirect = async (
+      //   address: string,
+      //   signDoc: SignDoc
+      // ): Promise<DirectSignResponse> => {
+      //   const signBytes = makeSignBytes(signDoc);
 
-      const payload = await getMsgSendStdSignDoc(
-        walletType === 'keysafe' ? accountAddress : keplrWallet.address,
+      //   const hashedMessage = crypto_1.sha256(signBytes);
+      //   const signature = await createSignature();
+
+      //   const signatureBytes = new Uint8Array([
+      //     ...signature.slice(0, 32),
+      //     ...signature.slice(32, 64),
+      //   ]);
+      //   const stdSignature = encodeEd25519Signature(pubKey, signatureBytes);
+      //   return {
+      //     signed: signDoc,
+      //     signature: stdSignature,
+      //   };
+      // };
+      // const signer: OfflineSigner = {
+      //   signDirect,
+      // }
+      const fee = {
+        amount: [{ amount: String(5000), denom: 'uixo' }],
+        gas: String(200000),
+      }
+      await messageSend(
+        keysafe,
+        accountAddress,
         receiverAddress,
-        formattedAmount,
+        'uixo',
+        '10000000',
+        fee,
       )
+      // let formattedAmount: any = asset
+      // if (formattedAmount.denom === 'ixo') {
+      //   formattedAmount = {
+      //     amount: getUIXOAmount(String(amount)),
+      //     denom: 'uixo',
+      //   }
+      // } else {
+      //   formattedAmount = {
+      //     amount: amount,
+      //     denom: formattedAmount.denom,
+      //   }
+      // }
 
-      const signature = await sign(walletType, payload)
-      console.log('signature', signature)
-      const txHash = await broadcast(signature)
-      console.log('txHash', txHash)
+      // const payload = await getMsgSendStdSignDoc(
+      //   walletType === 'keysafe' ? accountAddress : keplrWallet.address,
+      //   receiverAddress,
+      //   formattedAmount,
+      // )
 
-      if (txHash) {
-        setSignTXStatus(TXStatus.SUCCESS)
-        setSignTXhash(txHash)
-      } else {
-        setSignTXStatus(TXStatus.ERROR)
-      }
+      // const signature = await sign(walletType, payload)
+      // console.log('signature', signature)
+      // const txHash = await broadcast(signature)
+      // console.log('txHash', txHash)
+
+      // if (txHash) {
+      //   setSignTXStatus(TXStatus.SUCCESS)
+      //   setSignTXhash(txHash)
+      // } else {
+      //   setSignTXStatus(TXStatus.ERROR)
+      // }
     }
   }
 
