@@ -42,7 +42,7 @@ import { useWallet } from 'common/utils/wallet'
 import { getMsgSendStdSignDoc } from 'common/utils/message.helpers'
 import { useSign } from 'common/utils/sign.utils'
 import { useBroadcast } from 'common/utils/broadcast.utils'
-import { messageSend } from 'messageSend'
+import { messageSendKeysafe } from 'messageSend'
 import { OfflineSigner } from '@cosmjs/proto-signing'
 
 const NetworkFee = styled.div`
@@ -233,8 +233,7 @@ const SendModal: React.FunctionComponent<Props> = ({
         amount: [{ amount: String(5000), denom: 'uixo' }],
         gas: String(200000),
       }
-      await messageSend(
-        keysafe,
+      await messageSendKeysafe(
         accountAddress,
         receiverAddress,
         'uixo',

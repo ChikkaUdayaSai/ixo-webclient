@@ -325,6 +325,8 @@ export class SigningStargateClient extends StargateClient {
     }
     const txRaw = await this.sign(signerAddress, messages, usedFee, memo)
     const txBytes = TxRaw.encode(txRaw).finish()
+
+    console.log(111, txRaw, txBytes)
     return this.broadcastTx(
       txBytes,
       this.broadcastTimeoutMs,
