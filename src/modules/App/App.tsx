@@ -8,9 +8,11 @@ import {
 import { EntityType, EntityConfig } from 'modules/Entities/types'
 import FundingChat from 'modules/FundingChat/FundingChat.container'
 import * as React from 'react'
+import { isMobile } from 'react-device-detect'
 import * as ReactGA from 'react-ga'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import { Transition, animated } from 'react-spring/renderprops'
 import { ToastContainer } from 'react-toastify'
 import {
   getAssetListConfig,
@@ -55,6 +57,7 @@ export interface Props {
   onWeb3Connect: () => void
   loginStatusCheckCompleted: boolean
   assistantToggled: boolean
+  assistantFixed: boolean
   toggleAssistant: () => void
   handleGetRelayersConfig: () => void
   handleGetEntityConfig: () => void
@@ -154,19 +157,19 @@ class App extends React.Component<Props, State> {
   }
 
   render(): JSX.Element {
-    const { assistantToggled, toggleAssistant } = this.props
-    // let assistantBaseStyles: any = {
-    //   background: '#F0F3F9',
-    //   zIndex: 8,
-    // }
+    const { assistantToggled, toggleAssistant, assistantFixed } = this.props
+    let assistantBaseStyles: any = {
+      background: '#F0F3F9',
+      zIndex: 8,
+    }
 
-    // if (assistantFixed || isMobile) {
-    //   assistantBaseStyles = {
-    //     ...assistantBaseStyles,
-    //     position: 'fixed',
-    //     right: 0,
-    //   }
-    // }
+    if (assistantFixed || isMobile) {
+      assistantBaseStyles = {
+        ...assistantBaseStyles,
+        position: 'fixed',
+        right: 0,
+      }
+    }
 
     return (
       <ThemeProvider theme={this.state.customizedTheme}>
@@ -191,7 +194,7 @@ class App extends React.Component<Props, State> {
                 {assistantToggled && (
                   <FundingChat assistantPanelToggle={toggleAssistant} />
                 )}
-                {/* <Transition
+                <Transition
                   items={assistantToggled}
                   from={{ width: '0%' }}
                   enter={{ width: isMobile ? '100%' : '25%' }}
@@ -212,7 +215,7 @@ class App extends React.Component<Props, State> {
                       </animated.div>
                     ))
                   }
-                </Transition> */}
+                </Transition>
               </div>
               <Footer />
             </Container>
@@ -228,6 +231,7 @@ const mapStateToProps = (state: RootState): Record<string, any> => ({
   assistantToggled: state.account.assistantToggled,
   loginStatusCheckCompleted: state.account.loginStatusCheckCompleted,
   entityTypeMap: state.entities.entityConfig,
+  assistantFixed: state.account.assistantFixed,
 })
 
 const mapDispatchToProps = (dispatch: any): any => ({

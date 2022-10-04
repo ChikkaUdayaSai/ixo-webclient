@@ -1,12 +1,16 @@
-import Assistant from 'common/components/Assistant/Assistant_new'
-import { RootState } from 'common/redux/types'
-import { AgentRole } from 'modules/Account/types'
-import { createEntityAgent } from 'modules/Entities/SelectedEntity/EntityImpact/EntityAgents/EntityAgents.actions'
-import React, { Dispatch } from 'react'
+import React, { Dispatch, Fragment } from 'react'
 // import { RouteProps } from 'react-router'
 import { connect } from 'react-redux'
-import { cancelOrder, confirmOrder, getOrder } from './FundingChat.actions'
+import {
+  AssistantWrapper,
+  AssistantHeader,
+} from 'common/components/ControlPanel/Actions/Actions.styles'
+import Assistant from 'common/components/Assistant/Assistant'
+import { RootState } from 'common/redux/types'
 import * as fundingChatSelectors from './FundingChat.selectors'
+import { getOrder, confirmOrder, cancelOrder } from './FundingChat.actions'
+import { createEntityAgent } from 'modules/Entities/SelectedEntity/EntityImpact/EntityAgents/EntityAgents.actions'
+import { AgentRole } from 'modules/Account/types'
 
 interface Props {
   match?: any
@@ -40,15 +44,14 @@ interface Props {
 
 function FundingChat({ intent, params }: Props): JSX.Element {
   return (
-    // <Fragment>
-    //   <AssistantWrapper>
-    //     <AssistantHeader></AssistantHeader>
-    //     <div className="assistant-container">
-    //       <Assistant initMsg={intent} params={params} />
-    //     </div>
-    //   </AssistantWrapper>
-    // </Fragment>
-    <Assistant initMsg={intent} params={params} />
+    <Fragment>
+      <AssistantWrapper>
+        <AssistantHeader></AssistantHeader>
+        <div className="assistant-container">
+          <Assistant initMsg={intent} params={params} />
+        </div>
+      </AssistantWrapper>
+    </Fragment>
   )
 }
 
